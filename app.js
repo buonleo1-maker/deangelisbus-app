@@ -2,7 +2,8 @@
 // DEANGELISBUS – APP.JS V10 (Modalità C – Finale)
 // =====================================================
 
-const API = "https://script.google.com/macros/s/AKfycbwWmAcmOwFTUdIkBJAISrBp0_1NWpEh-xVo7HhNlKU4if2N8Lpd4bCNWX9kLa5hiF8E/exec";
+const API = "https://script.google.com/macros/s/AKfycbzN4xKU2C8unmkABdIOFsx7Sp_bir8u7JSpPz5P1veuUrDlImsloyrc30Hlo26LdSHe/exec";
+
 
 const ACTION_LOGIN   = "login";
 const ACTION_SALVA   = "salvaPresenza";
