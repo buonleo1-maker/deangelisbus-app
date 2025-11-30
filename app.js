@@ -241,11 +241,27 @@ async function caricaStorico(){
 // =====================================================
 function formatDataSafe(d){
     if (!d) return "";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d; // già corretto
-    
-    // prendi solo la parte AAAA-MM-GG senza time zone
-    let parts = d.split(/[T ]/)[0].split("-");
-    return `${parts[0]}-${parts[1]}-${parts[2]}`;
+
+    // Se è un oggetto Date → lo formatto correttamente senza fuso
+    if (d instanceof Date){
+        return d.toISOString().split("T")[0];
+    }
+
+    // Se è già nel formato corretto
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+
+    // Caso: "2025-11-30T00:00:00Z" o simili
+    if (typeof d === "string" && d.includes("-")){
+        return d.split(/[T ]/)[0]; 
+    }
+
+    // Fallback
+    try {
+        const dt = new Date(d);
+        return dt.toISOString().split("T")[0];
+    } catch {
+        return d;
+    }
 }
 async function elimina(id){
     if(!confirm("Eliminare questa presenza?")) return;
