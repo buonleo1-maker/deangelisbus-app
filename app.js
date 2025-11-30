@@ -3,7 +3,7 @@
 // =====================================================
 
 // BACKEND URL (deployment attivo)
-const API = "https://script.google.com/macros/s/AKfycbzN4xKU2C8unmkABdIOFsx7Sp_bir8u7JSpPz5P1veuUrDlImsloyrc30Hlo26LdSHe/exec";
+const API = "https://script.google.com/macros/s/AKfycbyHEGyG8QEpXhqSsQi5gE6cjSUoOj8z3m0pFF9tNwmzyOohXl4fBUxHOl-lvbM0_8HT/exec";
 
 // ACTIONS
 const ACTION_LOGIN   = "login";
