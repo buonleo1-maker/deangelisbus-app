@@ -196,41 +196,52 @@ async function caricaStorico(){
         const data = formatDataSafe(r.data);
         const bg = colori[r.tipo] || "#f8fafc";
 
-        html += `
-        <div class="card" id="row-${id}" style="background:${bg};margin-bottom:14px;">
-            <div style="display:flex;justify-content:space-between;">
-                <strong>${r.tipo}</strong>
-                <span>📅 ${data}</span>
-            </div>
+    html += `
+<div class="card" id="row-${id}" style="background:${bg};margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong>${r.tipo}</strong>
+        <span>📅 ${data}</span>
+    </div>
 
-            <div style="margin-top:8px;">
-                <strong>Descrizione</strong><br>
-                <input id="ds-${id}" value="${r.descrizione}">
-            </div>
+    <input type="hidden" id="d-${id}" value="${data}">
+    <input type="hidden" id="t-${id}" value="${r.tipo}">
 
-            <div class="row" style="margin-top:8px;">
-                <div><strong>Inizio</strong><br><input id="i-${id}" value="${r.oraInizio}"></div>
-                <div><strong>Fine</strong><br><input id="f-${id}" value="${r.oraFine}"></input></div>
-            </div>
+    <div style="margin-top:8px;">
+        <strong>Descrizione</strong><br>
+        <input id="ds-${id}" value="${r.descrizione}">
+    </div>
 
-            <div style="margin-top:8px;">
-                <strong>Durata</strong><br>
-                <input id="u-${id}" value="${r.durata||''}">
-            </div>
+    <div class="row" style="margin-top:8px;">
+        <div>
+            <strong>Inizio</strong><br>
+            <input id="i-${id}" value="${r.oraInizio}">
+        </div>
+        <div>
+            <strong>Fine</strong><br>
+            <input id="f-${id}" value="${r.oraFine}">
+        </div>
+    </div>
 
-            <div style="margin-top:8px;">
-                <strong>Note</strong><br>
-                <input id="n-${id}" value="${r.note||''}">
-            </div>
+    <div style="margin-top:8px;">
+        <strong>Durata</strong><br>
+        <input id="u-${id}" value="${r.durata||''}">
+    </div>
 
-            <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;">
-                <button onclick="salvaEdit(${id})" class="action-btn save">✏️ Salva</button>
-                <button onclick="elimina(${id})" class="action-btn delete">🗑️</button>
-                <button onclick="duplica(${id})" class="action-btn" style="background:#0284c7;color:white">📄 Duplica</button>
-                <button onclick="duplicaDomani(${id})" class="action-btn" style="background:#0ea5e9;color:white">📆 Domani</button>
-                <button onclick="nuovaDaQuesta(${id})" class="action-btn" style="background:#10b981;color:white">🆕 Nuova</button>
-            </div>
-        </div>`;
+    <div style="margin-top:8px;">
+        <strong>Note</strong><br>
+        <input id="n-${id}" value="${r.note||''}">
+    </div>
+
+    <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;">
+        <button onclick="salvaEdit(${id})" class="action-btn save">✏️ Salva</button>
+        <button onclick="elimina(${id})" class="action-btn delete">🗑️</button>
+        <button onclick="duplica(${id})" class="action-btn" style="background:#0284c7;color:white">📄 Duplica</button>
+        <button onclick="duplicaDomani(${id})" class="action-btn" style="background:#0ea5e9;color:white">📆 Domani</button>
+        <button onclick="nuovaDaQuesta(${id})" class="action-btn" style="background:#10b981;color:white">🆕 Nuova</button>
+    </div>
+</div>
+`;
+
     });
 
     cont.innerHTML = html;
