@@ -95,11 +95,17 @@
         <option value="Assenza">Assenza</option>
         <option value="Permesso">Permesso</option>
       </select>
+<etichetta>Descrizione</etichetta>
 
-      <label>Descrizione / Turno (sempre visibili)</label>
+<!-- BLOCCO PER IL TIPO TURNO -->
+<div id="blocco-turno">
+    <selezionare id="descrizione-turno"></selezionare>
+</div>
 
-      <select id="descrizione-turno"></select>
-      <input id="descrizione-libera" placeholder="Inserisci testo libero" />
+<!-- BLOCCO PER TUTTI GLI ALTRI TIPI -->
+<div id="blocco-libero" style="display:none;">
+    <ingresso id="descrizione-libera" segnaposto="Inserisci testo libero"/>
+</div>
 
      <!-- DESCRIZIONE / TURNO -->
 <etichetta>Descrizione</etichetta>
@@ -129,5 +135,6 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
