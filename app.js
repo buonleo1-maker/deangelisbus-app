@@ -89,17 +89,33 @@ async function caricaTurni(){
 // TIPO CAMBIATO – Modalità C (entrambi visibili)
 // =====================================================
 function onChangeTipo(){
-    // In modalità C NON si nasconde nulla
-    // Qui facciamo solo una cosa: se NON è Turno, suggeriamo campo libero
     const tipo = document.getElementById("tipo").value;
 
-    if (tipo !== "Turno") {
-        document.getElementById("descrizione-libera").placeholder = tipo;
-    } else {
-        document.getElementById("descrizione-libera").placeholder = "Inserisci testo libero (opzionale)";
+    const boxTurni = document.getElementById("box-turni");
+    const boxLibera = document.getElementById("box-libera");
+    const descLibera = document.getElementById("descrizione-libera");
+
+    if(tipo === "Turno"){
+        boxTurni.style.display = "block";
+        boxLibera.style.display = "none";
+        descLibera.value = "";
+        return;
+    }
+
+    // Per tutti i non-Turno
+    boxTurni.style.display = "none";
+    boxLibera.style.display = "block";
+
+    // Tipi con descrizione fissa automatica
+    const auto = ["Riposo","Malattia","Infortunio","Festivo","Permesso","Assenza"];
+
+    if(auto.includes(tipo)){
+        descLibera.value = tipo;
+    } else if(tipo === "Noleggio"){
+        descLibera.value = "";
+        descLibera.placeholder = "Inserisci descrizione";
     }
 }
-
 // =====================================================
 // SALVA PRESENZA – Modalità C
 // =====================================================
@@ -176,7 +192,8 @@ async function caricaStorico(){
     }
 
     const dati = js.dati || [];
-    dati.sort((a,b) => new Date(b.data) - new Date(a.data));
+    dati.sort((a,b) => (a.data < b.data ? 1 : -1));
+
 
     let html = "";
     const colori = {
@@ -193,7 +210,7 @@ async function caricaStorico(){
 
     dati.forEach(r => {
         const id = r.id;
-        const data = formatDataSafe(r.data);
+        const data = fixDate(r.data);
         const bg = colori[r.tipo] || "#f8fafc";
 
     html += `
@@ -250,26 +267,33 @@ async function caricaStorico(){
 // =====================================================
 // FUNZIONI STORICO
 // =====================================================
-function formatDataSafe(d){
-    if (!d) return "";
+function fixDate(d){
+    if(!d) return "";
 
-    // Se è un oggetto Date → lo formatto correttamente senza fuso
-    if (d instanceof Date){
-        return d.toISOString().split("T")[0];
+    // Formato perfetto dal backend "2025-11-30"
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d)){
+        const [yyyy, mm, dd] = d.split("-");
+        return `${dd}/${mm}/${yyyy}`;
     }
 
-    // Se è già nel formato corretto
-    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-
-    // Caso: "2025-11-30T00:00:00Z" o simili
-    if (typeof d === "string" && d.includes("-")){
-        return d.split(/[T ]/)[0]; 
+    // Caso "2025-11-30T00:00:00"
+    if(typeof d === "string" && d.includes("T")){
+        const base = d.split("T")[0];
+        const [yyyy, mm, dd] = base.split("-");
+        return `${dd}/${mm}/${yyyy}`;
     }
 
-    // Fallback
+    // Numeri seriali Google Sheets
+    if(!isNaN(d)){
+        const origin = new Date(1899, 11, 30);
+        const date = new Date(origin.getTime() + d * 86400000);
+        return date.toLocaleDateString("it-IT");
+    }
+
+    // Fallback finale
     try {
         const dt = new Date(d);
-        return dt.toISOString().split("T")[0];
+        return dt.toLocaleDateString("it-IT");
     } catch {
         return d;
     }
