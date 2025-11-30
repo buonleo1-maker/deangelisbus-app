@@ -401,6 +401,7 @@ window.onload = () => {
     if(saved){
         autistaCorrente = saved;
         mostraPagina("page-presenza");
-        caricaTurni();
+        // caricaTurni();  ← TOGLIERE QUESTA RIGA
     }
 };
+
