@@ -97,27 +97,19 @@
       <select id="descrizione-turno"></select>
       <input id="descrizione-libera" placeholder="Inserisci testo libero" />
 
-      <label>Data</label>
-      <input id="data" type="date" />
+     <!-- DESCRIZIONE / TURNO -->
+<etichetta>Descrizione</etichetta>
 
-      <div class="row">
-        <div>
-          <label>Ora Inizio</label>
-          <input id="oraInizio" type="time" />
-        </div>
-        <div>
-          <label>Ora Fine</label>
-          <input id="oraFine" type="time" />
-        </div>
-      </div>
+<!-- BLOCCO PER TURNO -->
+<div id="blocco-turno">
+    <selezionare id="descrizione-turno"></selezionare>
+</div>
 
-      <label>Note</label>
-      <textarea id="note" placeholder="Note opzionali"></textarea>
-
-      <button class="primary" onclick="salvaPresenza()">Salva</button>
-      <button class="primary" style="background:#475569" onclick="vaiStorico()">Storico</button>
-      <button class="primary" style="background:#ef4444" onclick="logout()">Esci</button>
-    </div>
+<!-- BLOCCO PER TUTTI GLI ALTRI TIPI -->
+<div id="blocco-libero" style="display:none;">
+    <ingresso id="descrizione-libera" segnaposto="Inserisci testo libero"/>
+</div>
+ 
 
     <!-- STORICO -->
     <div id="page-storico" class="page card">
@@ -133,3 +125,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
