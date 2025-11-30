@@ -1,90 +1,116 @@
 <!DOCTYPE html>
 <html lang="it">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DEANGELISBUS – Presenze</title>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
 <style>
+/* =========================================
+   STILE MODERNO – DEANGELISBUS
+========================================= */
+
+body {
+    font-family: 'Inter','Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #eef4ff;
+    color: #2b3a55;
+}
+
+.contenitore {
+    padding: 18px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.carta {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    margin-bottom: 26px;
+}
+
+h2 {
+    display: flex;
+    align-items: center;
+    font-size: 1.3rem;
+    margin-bottom: 14px;
+    gap: 8px;
+}
+
+h2 .material-icons-round {
+    color: #0078D7;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 14px;
+    margin-top: 8px;
+    border-radius: 12px;
+    border: 1px solid #ccd3da;
+    font-size: 1rem;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 16px;
+    background: #0078D7;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+button.secondary {
+    background: #ef4444;
+}
+
+button.alt {
+    background: #475569;
+}
+
+.pagina { display: none; }
+.attiva { display: block; }
+
+/* Mostra/Nascondi blocchi descrizione */
 #blocco-turno { display: block; }
 #blocco-libero { display: none; }
+
 </style>
-  <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DEANGELISBUS – Presenze</title>
-
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="icons/icon-512.png" />
-  <link rel="apple-touch-icon" href="icons/icon-512.png" />
-  <meta name="theme-color" content="#0078D7" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
-
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter','Segoe UI',sans-serif;
-      background: #eef4ff;
-      color: #1e293b;
-    }
-    .container {
-      max-width: 480px;
-      margin: auto;
-      padding: 16px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 6px 16px rgba(0,0,0,.12);
-    }
-    h2 {
-      margin-top: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
-      font-size: 1rem;
-    }
-    button.primary {
-      width: 100%;
-      background: #0078D7;
-      color: #fff;
-      border: none;
-      padding: 14px;
-      margin-top: 16px;
-      border-radius: 12px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .page { display: none; }
-    .active { display: block; }
-    .row { display: flex; gap: 6px; }
-    .row input { flex: 1; }
-  </style>
 </head>
 
 <body>
-  <div class="container">
 
-    <!-- LOGIN -->
-    <div id="page-login" class="page active card">
-      <h2><span class="material-icons-round">login</span>Accesso</h2>
-      <label>Autista</label>
-      <input id="login-nome" type="text" placeholder="COGNOME Nome" />
-      <label>PIN</label>
-      <input id="login-pin" type="password" placeholder="PIN" />
-      <button class="primary" onclick="login()">Entra</button>
-    </div>
+<div class="contenitore">
 
-    <!-- INSERISCI PRESENZA -->
-    <div id="page-presenza" class="page card">
-      <h2><span class="material-icons-round">edit_calendar</span>Inserisci Presenza</h2>
+<!-- ACCESSO -->
+<div id="page-login" class="pagina attiva carta">
+    <h2><span class="material-icons-round">login</span>Accesso</h2>
 
-      <label>Tipo</label>
-      <select id="tipo" onchange="onChangeTipo()">
+    <etichetta>Autista</etichetta>
+    <input id="login-nome" placeholder="COGNOME Nome">
+
+    <etichetta>PIN</etichetta>
+    <input id="login-pin" type="password" placeholder="PIN">
+
+    <button onclick="login()">Entra</button>
+</div>
+
+<!-- INSERISCI PRESENZA -->
+<div id="page-presenza" class="pagina carta">
+    <h2><span class="material-icons-round">schedule</span>Inserisci Presenza</h2>
+
+    <!-- TIPO -->
+    <etichetta>Tipo</etichetta>
+    <select id="tipo" onchange="onChangeTipo()">
         <option value="Turno">Turno</option>
         <option value="Noleggio">Noleggio</option>
         <option value="Riposo">Riposo</option>
@@ -94,47 +120,57 @@
         <option value="Infortunio">Infortunio</option>
         <option value="Assenza">Assenza</option>
         <option value="Permesso">Permesso</option>
-      </select>
-<etichetta>Descrizione</etichetta>
+    </select>
 
-<!-- BLOCCO PER IL TIPO TURNO -->
-<div id="blocco-turno">
-    <selezionare id="descrizione-turno"></selezionare>
-</div>
+    <!-- DESCRIZIONE -->
+    <etichetta>Descrizione</etichetta>
 
-<!-- BLOCCO PER TUTTI GLI ALTRI TIPI -->
-<div id="blocco-libero" style="display:none;">
-    <ingresso id="descrizione-libera" segnaposto="Inserisci testo libero"/>
-</div>
-
-     <!-- DESCRIZIONE / TURNO -->
-<etichetta>Descrizione</etichetta>
-
-<!-- BLOCCO PER TURNO -->
-<div id="blocco-turno">
-    <selezionare id="descrizione-turno"></selezionare>
-</div>
-
-<!-- BLOCCO PER TUTTI GLI ALTRI TIPI -->
-<div id="blocco-libero" style="display:none;">
-    <ingresso id="descrizione-libera" segnaposto="Inserisci testo libero"/>
-</div>
- 
-
-    <!-- STORICO -->
-    <div id="page-storico" class="page card">
-      <h2><span class="material-icons-round">history</span>Storico</h2>
-      <div id="storico-container"></div>
-
-      <button class="primary" style="background:#475569" onclick="mostraPagina('page-presenza')">Inserisci</button>
-      <button class="primary" style="background:#ef4444" onclick="logout()">Esci</button>
+    <div id="blocco-turno">
+        <select id="descrizione-turno"></select>
     </div>
 
-  </div>
+    <div id="blocco-libero">
+        <input id="descrizione-libera" placeholder="Inserisci testo libero">
+    </div>
 
-  <script src="app.js"></script>
+    <!-- DATA -->
+    <etichetta>Data</etichetta>
+    <input id="data" type="date">
+
+    <!-- ORARI -->
+    <div style="display:flex; gap: 12px;">
+        <div style="flex:1;">
+            <etichetta>Ora Inizio</etichetta>
+            <input id="oraInizio" type="time">
+        </div>
+        <div style="flex:1;">
+            <etichetta>Ora Fine</etichetta>
+            <input id="oraFine" type="time">
+        </div>
+    </div>
+
+    <!-- NOTE -->
+    <etichetta>Note</etichetta>
+    <textarea id="note" placeholder="Nota opzionale"></textarea>
+
+    <button onclick="salvaPresenza()">💾 Salva</button>
+    <button class="alt" onclick="vaiStorico()">📜 Storico</button>
+    <button class="secondary" onclick="logout()">Esci</button>
+</div>
+
+
+<!-- STORICO -->
+<div id="page-storico" class="pagina carta">
+    <h2><span class="material-icons-round">history</span>Storico</h2>
+
+    <div id="storico-container">Caricamento...</div>
+
+    <button onclick="mostraPagina('page-presenza')" class="alt">➕ Inserisci</button>
+    <button class="secondary" onclick="logout()">Esci</button>
+</div>
+
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
-
-
-
