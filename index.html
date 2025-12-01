@@ -6,116 +6,136 @@
 
 <title>DEANGELISBUS – Presenze</title>
 
-<!-- Icone Material -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
 <style>
-    body{
-        font-family:'Inter','Segoe UI',sans-serif;
-        margin:0;
-        padding:0;
-        background:#eef4ff;
+    body {
+        margin: 0;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: #eaf2ff;
     }
 
-    .container{
-        max-width:550px;
-        margin:40px auto;
-        padding:0 15px;
+    .contenitore {
+        max-width: 500px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
     }
 
-    .card{
-        background:#fff;
-        padding:22px;
-        border-radius:18px;
-        box-shadow:0 6px 20px rgba(0,0,0,.12);
-        margin-bottom:20px;
+    h2 {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #1b3a7a;
     }
 
-    h2{
-        display:flex;
-        align-items:center;
-        gap:6px;
-        margin:0 0 16px 0;
-        font-size:1.4rem;
-        color:#2b3a55;
+    label {
+        font-weight: 600;
+        margin-top: 15px;
+        display: block;
+        font-size: 15px;
+        color: #2b3a55;
     }
 
-    input, select, textarea, button{
-        width:100%;
-        padding:14px;
-        border-radius:12px;
-        border:1px solid #ccd3da;
-        margin-top:10px;
-        font-size:1rem;
-        box-sizing:border-box;
+    input, select, textarea {
+        width: 100%;
+        padding: 12px;
+        margin-top: 6px;
+        border-radius: 10px;
+        border: 1px solid #d0d6de;
+        font-size: 16px;
+        box-sizing: border-box;
     }
 
-    button{
-        cursor:pointer;
-        border:none;
+    textarea {
+        height: 70px;
     }
 
-    .btn-primary{
-        background:#0078D7;
-        color:#fff;
-        margin-top:20px;
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        cursor: pointer;
+        color: #fff;
     }
 
-    .btn-secondary{
-        background:#ef4444;
-        color:#fff;
-        margin-top:10px;
+    .btn-login { background: #0078D7; }
+    .btn-salva  { background: #0078D7; }
+    .btn-storico { background: #4557d4; }
+    .btn-esci { background: #d63c3c; }
+
+    .btn-blue { background: #0078D7; width: 32%; display: inline-block; }
+    .btn-orange { background: #ff8c00; width: 32%; display: inline-block; }
+    .btn-red { background: #d63c3c; width: 32%; display: inline-block; }
+
+    .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
     }
 
-    .btn-alt{
-        background:#475569;
-        color:#fff;
-        margin-top:10px;
+    .data {
+        font-weight: bold;
+        color: #1b3a7a;
+        margin-bottom: 6px;
     }
 
-    .page{
-        display:none;
-    }
-    .page.active{
-        display:block;
+    .azioni {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
     }
 
-    /* campo turno/testo libero */
-    #descrizione-turno,
-    #descrizione-libera{
-        margin-top:10px;
+    #toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1b3a7a;
+        color: #fff;
+        padding: 12px 25px;
+        border-radius: 12px;
+        display: none;
     }
+
+    .pagina { display: none; }
 </style>
-
 </head>
 
 <body>
-<div id="storico-container"></div>
 
-    <!-- ================================
-         LOGIN
-    ================================= -->
-    <div id="page-login" class="page card active">
-        <h2><span class="material-icons-round">login</span>Accesso</h2>
+<div class="contenitore">
+
+    <!-- LOGIN -->
+    <div id="page-login" class="pagina">
+        <h2><span class="material-icons-round">login</span> Accesso</h2>
 
         <label>Autista</label>
-        <input id="login-nome" placeholder="COGNOME Nome">
+        <input id="login-autista" placeholder="COGNOME Nome">
 
         <label>PIN</label>
         <input id="login-pin" type="password" placeholder="PIN">
 
-        <button class="btn-primary" onclick="login()">Entra</button>
+        <button class="btn-login" onclick="login()">Entra</button>
     </div>
 
 
-    <!-- ================================
-         INSERISCI PRESENZA
-    ================================= -->
-    <div id="page-presenza" class="page card">
+    <!-- INSERIMENTO PRESENZA -->
+    <div id="page-presenza" class="pagina">
         <h2><span class="material-icons-round">edit_calendar</span>Inserisci Presenza</h2>
 
         <label>Tipo</label>
-        <select id="tipo" onchange="onChangeTipo()">
+        <select id="tipo">
+            <option value="">-- Seleziona --</option>
             <option value="Turno">Turno</option>
             <option value="Noleggio">Noleggio</option>
             <option value="Riposo">Riposo</option>
@@ -127,46 +147,42 @@
             <option value="Permesso">Permesso</option>
         </select>
 
-        <!-- campo turno -->
-        <select id="descrizione-turno"></select>
-
-        <!-- campo testo libero -->
-        <input id="descrizione-libera" placeholder="Inserisci testo libero">
+        <label>Descrizione / Turno</label>
+        <select id="descrizione"></select>
 
         <label>Data</label>
-        <input id="data" type="date">
+        <input type="date" id="data">
 
         <label>Ora Inizio</label>
-        <input id="oraInizio" type="time">
+        <input type="time" id="oraInizio">
 
         <label>Ora Fine</label>
-        <input id="oraFine" type="time">
+        <input type="time" id="oraFine">
 
         <label>Note</label>
         <textarea id="note" placeholder="Nota opzionale"></textarea>
 
-        <button class="btn-primary" onclick="salvaPresenza()">Salva</button>
-        <button class="btn-alt" onclick="vaiStorico()">Storico</button>
-        <button class="btn-secondary" onclick="logout()">Esci</button>
+        <button class="btn-salva" onclick="salvaPresenza()">Salva</button>
+        <button class="btn-storico" onclick="mostraStorico(); mostraPagina('page-storico')">Storico</button>
+        <button class="btn-esci" onclick="logout()">Esci</button>
     </div>
 
 
-    <!-- ================================
-         STORICO
-    ================================= -->
-    <div id="page-storico" class="page card">
+    <!-- STORICO -->
+    <div id="page-storico" class="pagina">
         <h2><span class="material-icons-round">history</span>Storico</h2>
 
-        <div id="storico-container">Caricamento...</div>
+        <div id="storico-lista"></div>
 
-        <button class="btn-alt" onclick="mostraPagina('page-presenza')">➕ Inserisci</button>
-        <button class="btn-secondary" onclick="logout()">Esci</button>
+        <button class="btn-blue" onclick="nuovaPresenza()">Inserisci</button>
+        <button class="btn-esci" onclick="logout()">Esci</button>
     </div>
 
 </div>
+
+<div id="toast"></div>
 
 <script src="app.js"></script>
 
 </body>
 </html>
-
