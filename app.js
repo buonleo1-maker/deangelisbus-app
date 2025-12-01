@@ -4,7 +4,7 @@
 // =====================================================
 
 // 🔗 URL BACKEND (metti il tuo!)
-const API = "https://script.google.com/macros/s/AKfycbxZhtmRJMnA8uYc1Z2A9TJZx9N81_pT5Ez_kTlfvvcKb34btofN4WUEFEwULS/exec";
+const API = "https://script.google.com/macros/s/AKfycbxZhtmRJMnA8uYc12ZA9T1JZwX9N81_pT5Ez_kTlFvvcKb34btofN4WUEFlwU5/exec";
 
 // 🔧 Azioni
 const ACTION_LOGIN   = "login";
@@ -215,3 +215,4 @@ window.onload = () => {
         caricaTurni();
     }
 };
+// refresh-0112-1130
