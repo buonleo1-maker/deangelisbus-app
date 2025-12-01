@@ -3,90 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>DEANGELISBUS – Presenze</title>
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
 <style>
-body{
-    margin:0;
-    font-family:'Inter','Segoe UI',sans-serif;
-    background:#eaf2ff;
-}
+    body {
+        margin: 0;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: #eaf2ff;
+    }
 
-.contenitore{
-    max-width:500px;
-    margin:30px auto;
-    background:#fff;
-    padding:25px;
-    border-radius:20px;
-    box-shadow:0 6px 20px rgba(0,0,0,.12);
-}
+    .contenitore {
+        max-width: 500px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
 
-h2{
-    margin-top:0;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    color:#1b3a7a;
-}
+    h2 {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #1b3a7a;
+    }
 
-label{
-    font-weight:600;
-    margin-top:15px;
-    display:block;
-    font-size:15px;
-}
+    label {
+        font-weight: 600;
+        margin-top: 15px;
+        display: block;
+        font-size: 15px;
+        color: #2b3a55;
+    }
 
-input,select,textarea{
-    width:100%;
-    padding:12px;
-    margin-top:6px;
-    border-radius:10px;
-    border:1px solid #d0d6de;
-    font-size:16px;
-}
+    input, select, textarea {
+        width: 100%;
+        padding: 12px;
+        margin-top: 6px;
+        border-radius: 10px;
+        border: 1px solid #d0d6de;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
 
-button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:12px;
-    font-size:16px;
-    color:#fff;
-    cursor:pointer;
-    margin-top:15px;
-}
+    textarea {
+        height: 70px;
+    }
 
-.btn-login  { background:#0078D7; }
-.btn-salva  { background:#0078D7; }
-.btn-storico{ background:#4854d4; }
-.btn-esci   { background:#d63c3c; }
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        cursor: pointer;
+        color: #fff;
+    }
 
-.page { display:none; }
+    .btn-login { background: #0078D7; }
+    .btn-salva  { background: #0078D7; }
+    .btn-storico { background: #4557d4; }
+    .btn-esci { background: #d63c3c; }
 
-.card{
-    background:#fff;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:15px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.1);
-}
+    .scheda {
+        background: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
 
-.barra-btn{
-    display:flex;
-    justify-content:space-between;
-    margin-top:10px;
-}
+    .data {
+        font-weight: bold;
+        color: #1b3a7a;
+        margin-bottom: 8px;
+    }
 
-.blu{ background:#0078D7; width:32%; }
-.arancione{ background:#ff8c00; width:32%; }
-.rosso{ background:#d63c3c; width:32%; }
+    .barra-btn {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .blu { background:#1d4ed8; flex:1; }
+    .arancione { background:#f97316; flex:1; }
+    .rosso { background:#dc2626; flex:1; }
+
+    .page { display: none; }
+    .active { display: block; }
+
 </style>
 </head>
 
-
 <body>
+
 <div class="contenitore">
 
     <!-- LOGIN -->
@@ -103,8 +118,7 @@ button{
     </div>
 
 
-
-    <!-- PRESENZA -->
+    <!-- INSERIMENTO PRESENZA -->
     <div id="page-presenza" class="page">
         <h2><span class="material-icons-round">edit_calendar</span> Inserisci Presenza</h2>
 
@@ -122,11 +136,11 @@ button{
             <option value="Permesso">Permesso</option>
         </select>
 
-        <label>Descrizione / Turno</label>
+        <label>Turni</label>
         <select id="descrizione-turno"></select>
 
         <label>Descrizione libera</label>
-        <input id="descrizione-libera" placeholder="Testo libero">
+        <input id="descrizione-libera" placeholder="Descrizione">
 
         <label>Data</label>
         <input type="date" id="data">
@@ -138,13 +152,12 @@ button{
         <input type="time" id="oraFine">
 
         <label>Note</label>
-        <textarea id="note"></textarea>
+        <textarea id="note" placeholder="Nota opzionale"></textarea>
 
         <button class="btn-salva" onclick="salvaPresenza()">Salva</button>
         <button class="btn-storico" onclick="vaiStorico()">Storico</button>
         <button class="btn-esci" onclick="logout()">Esci</button>
     </div>
-
 
 
     <!-- STORICO -->
@@ -153,12 +166,13 @@ button{
 
         <div id="contenitore-storico"></div>
 
-        <button onclick="mostraPagina('page-presenza')" class="btn-login">➕ Inserisci</button>
-        <button onclick="logout()" class="btn-esci">Esci</button>
+        <button class="btn-login" onclick="mostraPagina('page-presenza')">➕ Inserisci</button>
+        <button class="btn-esci" onclick="logout()">Esci</button>
     </div>
 
 </div>
 
 <script src="app.js"></script>
+
 </body>
 </html>
