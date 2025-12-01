@@ -84,16 +84,6 @@
         margin-bottom: 8px;
     }
 
-    .barra-btn {
-        display: flex;
-        gap: 10px;
-        margin-top: 12px;
-    }
-
-    .blu { background:#1d4ed8; flex:1; }
-    .arancione { background:#f97316; flex:1; }
-    .rosso { background:#dc2626; flex:1; }
-
     .page { display: none; }
     .active { display: block; }
 
@@ -123,7 +113,7 @@
         <h2><span class="material-icons-round">edit_calendar</span> Inserisci Presenza</h2>
 
         <label>Tipo</label>
-        <select id="tipo">
+        <select id="tipo" onchange="aggiornaDescrizione()">
             <option value="">-- Seleziona --</option>
             <option value="Turno">Turno</option>
             <option value="Noleggio">Noleggio</option>
@@ -136,11 +126,17 @@
             <option value="Permesso">Permesso</option>
         </select>
 
-        <label>Turni</label>
-        <select id="descrizione-turno"></select>
+        <!-- BOX TURNI -->
+        <div id="box-turni" style="display:none;">
+            <label>Turni</label>
+            <select id="descrizione-turno"></select>
+        </div>
 
-        <label>Descrizione libera</label>
-        <input id="descrizione-libera" placeholder="Descrizione">
+        <!-- BOX DESCRIZIONE LIBERA -->
+        <div id="box-libero" style="display:none;">
+            <label>Descrizione</label>
+            <input id="descrizione-libera" placeholder="Descrizione">
+        </div>
 
         <label>Data</label>
         <input type="date" id="data">
