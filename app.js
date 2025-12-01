@@ -19,10 +19,23 @@ let autistaCorrente = null;
 // =====================================================
 // SHOW/HIDE PAGINE
 // =====================================================
+// =====================================================
+// SHOW/HIDE PAGINE
+// =====================================================
 function mostraPagina(id){
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
+
+// =====================================================
+// LOGOUT
+// =====================================================
+function logout(){
+    localStorage.removeItem("autista");
+    autistaCorrente = null;
+    mostraPagina("page-login");
+}
+
 
 // =====================================================
 // LOGIN
