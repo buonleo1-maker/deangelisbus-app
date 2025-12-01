@@ -1,5 +1,5 @@
 // =====================================================
-// DEANGELISBUS – APP.JS V15 (STABILE E CORRETTO)
+// DEANGELISBUS – APP.JS V16 (CON LOGICA TURNI/NOL/ALTRI)
 // =====================================================
 
 // URL BACKEND
@@ -22,7 +22,6 @@ let modificaID = null;
 // =====================================================
 async function apiCall(params){
     const url = API + "?" + new URLSearchParams(params);
-
     const res = await fetch(url);
     return await res.json();
 }
@@ -90,18 +89,8 @@ function mostraPagina(id){
 // =====================================================
 function formattaData(d){
     if(!d) return "";
-
-    // Oggetto Date
-    if(d instanceof Date){
-        return d.toISOString().split("T")[0];
-    }
-
-    // Stringa ISO
-    if(String(d).includes("T")){
-        return d.split("T")[0];
-    }
-
-    // Formato già corretto
+    if(d instanceof Date) return d.toISOString().split("T")[0];
+    if(String(d).includes("T")) return d.split("T")[0];
     return d;
 }
 
@@ -130,12 +119,77 @@ async function caricaTurni(){
 
 
 // =====================================================
+// CAMBIO TIPO → LOGICA TURNI / NOLEGGIO / ALTRE VOCI
+// =====================================================
+function aggiornaDescrizione(){
+
+    const tipo = document.getElementById("tipo").value;
+
+    const boxTurni = document.getElementById("box-turni");
+    const boxLibero = document.getElementById("box-libero");
+
+    const descTurno = document.getElementById("descrizione-turno");
+    const descLibera = document.getElementById("descrizione-libera");
+
+    // reset
+    boxTurni.style.display = "none";
+    boxLibero.style.display = "none";
+
+    descTurno.value = "";
+    descLibera.value = "";
+    descLibera.readOnly = false;
+
+    // -------------------------------
+    // TIPO = TURNO
+    // -------------------------------
+    if(tipo === "Turno"){
+        boxTurni.style.display = "block";
+        boxLibero.style.display = "block";
+
+        descLibera.placeholder = "Cerca un turno o scrivilo liberamente...";
+        descLibera.readOnly = false;
+
+        return;
+    }
+
+    // -------------------------------
+    // TIPO = NOLEGGIO
+    // -------------------------------
+    if(tipo === "Noleggio"){
+        boxLibero.style.display = "block";
+
+        descLibera.placeholder = "Es. Matera – Bari";
+        descLibera.readOnly = false;
+
+        return;
+    }
+
+    // -------------------------------
+    // TUTTI GLI ALTRI TIPI
+    // -------------------------------
+    boxLibero.style.display = "block";
+    descLibera.value = tipo;
+    descLibera.readOnly = true;
+}
+
+
+// =====================================================
 // SALVA PRESENZA
 // =====================================================
 async function salvaPresenza(){
 
     const tipo = document.getElementById("tipo").value;
-    const desc = document.getElementById("descrizione-turno").value || document.getElementById("descrizione-libera").value;
+
+    // Descrizione = turno o testo libero
+    let descrizione = document.getElementById("descrizione-libera").value.trim();
+    const turnoSel = document.getElementById("descrizione-turno").value;
+
+    if(tipo === "Turno"){
+        // Se inserito manualmente → usa testo libero
+        // Se selezionato → sovrascrive
+        if(turnoSel) descrizione = turnoSel;
+    }
+
     const data = document.getElementById("data").value;
     const ini  = document.getElementById("oraInizio").value;
     const fin  = document.getElementById("oraFine").value;
@@ -146,11 +200,16 @@ async function salvaPresenza(){
         return;
     }
 
+    // Tipo colonna foglio
+    let tipoColonna = "";
+    if(tipo === "Turno") tipoColonna = "T";
+    else if(tipo === "Noleggio") tipoColonna = "N";
+
     const params = {
         action: ACTION_SALVA,
         autista: autistaCorrente,
-        tipo,
-        descrizione: desc,
+        tipo: tipoColonna,
+        descrizione,
         data,
         oraInizio: ini,
         oraFine: fin,
@@ -178,15 +237,16 @@ async function salvaPresenza(){
 function duplicaPresenza(id){
     modificaID = null;
 
-    const blocco = document.querySelector(`[data-id="${id}"]`);
+    const b = document.querySelector(`[data-id="${id}"]`);
 
-    document.getElementById("tipo").value       = blocco.dataset.tipo;
-    document.getElementById("descrizione-turno").value = blocco.dataset.descrizione;
-    document.getElementById("data").value       = blocco.dataset.data;
-    document.getElementById("oraInizio").value  = blocco.dataset.oraInizio;
-    document.getElementById("oraFine").value    = blocco.dataset.oraFine;
-    document.getElementById("note").value       = blocco.dataset.note;
+    document.getElementById("tipo").value         = b.dataset.tipo;
+    document.getElementById("descrizione-libera").value = b.dataset.descrizione;
+    document.getElementById("data").value         = b.dataset.data;
+    document.getElementById("oraInizio").value    = b.dataset.oraInizio;
+    document.getElementById("oraFine").value      = b.dataset.oraFine;
+    document.getElementById("note").value         = b.dataset.note;
 
+    aggiornaDescrizione();
     mostraPagina("page-presenza");
 }
 
@@ -201,12 +261,13 @@ function modificaPresenza(id){
     const b = document.querySelector(`[data-id="${id}"]`);
 
     document.getElementById("tipo").value         = b.dataset.tipo;
-    document.getElementById("descrizione-turno").value = b.dataset.descrizione;
+    document.getElementById("descrizione-libera").value = b.dataset.descrizione;
     document.getElementById("data").value         = b.dataset.data;
     document.getElementById("oraInizio").value    = b.dataset.oraInizio;
     document.getElementById("oraFine").value      = b.dataset.oraFine;
     document.getElementById("note").value         = b.dataset.note;
 
+    aggiornaDescrizione();
     mostraPagina("page-presenza");
 }
 
@@ -264,7 +325,7 @@ async function vaiStorico(){
             card.innerHTML = `
                 <h3>${formattaData(item.data)}</h3>
 
-                <p><b>${item.tipo}</b> — ${item.descrizione || ""}</p>
+                <p><b>${item.tipo || ""}</b> — ${item.descrizione || ""}</p>
                 <p>${item.oraInizio || "--:--"} → ${item.oraFine || "--:--"}</p>
 
                 <div class="rigaBottoni">
@@ -295,4 +356,3 @@ window.onload = () => {
         caricaTurni();
     }
 };
-
