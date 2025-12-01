@@ -1,9 +1,9 @@
 // =====================================================
-// DEANGELISBUS – APP.JS V15 DEFINITIVO
-// Tutte le richieste sono GET → niente CORS, niente errori
+// DEANGELISBUS – APP.JS V16 DEFINITIVO
+// Tutte le richieste sono GET → zero CORS, zero errori
 // =====================================================
 
-// 🔗 URL BACKEND (metti il tuo!)
+// 🔗 URL BACKEND
 const API = "https://script.google.com/macros/s/AKfycbxZhtmRJMnA8uYc12ZA9T1JZwX9N81_pT5Ez_kTlFvvcKb34btofN4WUEFlwU5/exec";
 
 // 🔧 Azioni
@@ -20,8 +20,8 @@ let autistaCorrente = null;
 // SHOW/HIDE PAGINE
 // =====================================================
 function mostraPagina(id){
-    document.querySelectorAll(".pagina").forEach(p => p.classList.remove("attivo"));
-    document.getElementById(id).classList.add("attivo");
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
 }
 
 // =====================================================
@@ -36,24 +36,23 @@ async function login(){
         return;
     }
 
-    const url = API + `?action=${ACTION_LOGIN}&nome=${encodeURIComponent(nome)}&pin=${encodeURIComponent(pin)}`;
+    const url = `${API}?action=${ACTION_LOGIN}&nome=${encodeURIComponent(nome)}&pin=${encodeURIComponent(pin)}`;
 
     try{
-        const res = await fetch(url);
-        const js = await res.json();
+        const r = await fetch(url);
+        const js = await r.json();
 
         if(js.status === "OK"){
             autistaCorrente = nome;
             localStorage.setItem("autista", nome);
-
             mostraPagina("page-presenza");
             caricaTurni();
         } else {
-            alert("PIN errato");
+            alert("Credenziali errate");
         }
 
     }catch(err){
-        console.error("Login error:", err);
+        console.error(err);
         alert("Errore di connessione");
     }
 }
@@ -64,18 +63,16 @@ async function login(){
 function logout(){
     localStorage.removeItem("autista");
     autistaCorrente = null;
-    mostraPagina("page-accesso");
+    mostraPagina("page-login");
 }
 
 // =====================================================
 // CARICA TURNI
-// GET SEMPLICE SENZA HEADER → nessun errore CORS
 // =====================================================
 async function caricaTurni(){
     try{
-        const url = API + `?action=${ACTION_TURNI}`;
-        const res = await fetch(url);
-        const js = await res.json();
+        const r = await fetch(`${API}?action=${ACTION_TURNI}`);
+        const js = await r.json();
 
         if(js.status === "OK"){
             const sel = document.getElementById("descrizione-turno");
@@ -88,13 +85,14 @@ async function caricaTurni(){
                 sel.appendChild(opt);
             });
         }
+
     }catch(err){
-        console.error("Errore caricamento turni:", err);
+        console.error("Errore turni:", err);
     }
 }
 
 // =====================================================
-// CAMBIO TIPO → mostra/nasconde descrizione
+// CAMBIO TIPO (turno / testo libero)
 // =====================================================
 function onChangeTipo(){
     const tipo = document.getElementById("tipo").value;
@@ -114,16 +112,16 @@ function onChangeTipo(){
 async function salvaPresenza(){
 
     const tipo = document.getElementById("tipo").value;
-    const desc = document.getElementById("descrizione-turno").value || 
+    const desc = document.getElementById("descrizione-turno").value ||
                  document.getElementById("descrizione-libera").value;
 
     const data = document.getElementById("data").value;
     const ini  = document.getElementById("oraInizio").value;
     const fin  = document.getElementById("oraFine").value;
-    const note = document.getElementById("nota").value;
+    const note = document.getElementById("note").value;
 
-    const url = API 
-        + `?action=${ACTION_SALVA}`
+    const url =
+        `${API}?action=${ACTION_SALVA}`
         + `&autista=${encodeURIComponent(autistaCorrente)}`
         + `&tipo=${encodeURIComponent(tipo)}`
         + `&descrizione=${encodeURIComponent(desc)}`
@@ -133,17 +131,18 @@ async function salvaPresenza(){
         + `&note=${encodeURIComponent(note)}`;
 
     try{
-        const res = await fetch(url);
-        const js = await res.json();
+        const r = await fetch(url);
+        const js = await r.json();
 
         if(js.status === "OK"){
             alert("Presenza salvata!");
         } else {
             alert("Errore: " + js.message);
         }
+
     }catch(err){
-        console.error("Errore salvataggio:", err);
-        alert("Errore di rete");
+        console.error(err);
+        alert("Errore salvataggio");
     }
 }
 
@@ -153,19 +152,19 @@ async function salvaPresenza(){
 async function vaiStorico(){
     mostraPagina("page-storico");
 
-    const url = API + `?action=${ACTION_STORICO}&autista=${encodeURIComponent(autistaCorrente)}`;
+    const url = `${API}?action=${ACTION_STORICO}&autista=${encodeURIComponent(autistaCorrente)}`;
 
     try{
-        const res = await fetch(url);
-        const js = await res.json();
+        const r = await fetch(url);
+        const js = await r.json();
 
-        const div = document.getElementById("contenitore-storico");
+        const div = document.getElementById("storico-container");
         div.innerHTML = "";
 
         if(js.status === "OK"){
             js.dati.forEach(r => {
                 const box = document.createElement("div");
-                box.className = "rigaStorico";
+                box.style.marginBottom = "12px";
                 box.innerHTML = `
                     <b>${r.data}</b> — ${r.tipo} — ${r.descrizione}<br>
                     ${r.oraInizio} → ${r.oraFine}<br>
@@ -177,7 +176,7 @@ async function vaiStorico(){
         }
 
     }catch(err){
-        console.error("Errore storico:", err);
+        console.error(err);
     }
 }
 
@@ -185,27 +184,21 @@ async function vaiStorico(){
 // CANCELLA PRESENZA
 // =====================================================
 async function cancella(id){
-    if(!confirm("Cancellare presenza?")) return;
+    if(!confirm("Confermi eliminazione?")) return;
 
-    const url = API + `?action=${ACTION_DELETE}&id=${id}`;
-
-    try{
-        await fetch(url);
-        vaiStorico();
-    }catch(err){
-        console.error(err);
-    }
+    await fetch(`${API}?action=${ACTION_DELETE}&id=${id}`);
+    vaiStorico();
 }
 
 // =====================================================
-// DUPLICA (precompila i campi)
+// DUPLICA → apre solo la pagina
 // =====================================================
-async function duplica(id){
+function duplica(id){
     mostraPagina("page-presenza");
 }
 
 // =====================================================
-// AUTO LOGIN SE PRESENTE
+// AUTOLOGIN
 // =====================================================
 window.onload = () => {
     const saved = localStorage.getItem("autista");
@@ -215,4 +208,3 @@ window.onload = () => {
         caricaTurni();
     }
 };
-// refresh-0112-1130
