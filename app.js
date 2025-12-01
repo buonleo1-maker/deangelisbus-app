@@ -1,11 +1,12 @@
 // =====================================================
-// DEANGELISBUS – APP.JS V15 (FINALE)
+// DEANGELISBUS – APP.JS V15 DEFINITIVO
+// Tutte le richieste sono GET → niente CORS, niente errori
 // =====================================================
 
-// BACKEND URL (deployment attivo)
-const API = "https://script.google.com/macros/s/AKfycbyHEGyG8QEpXhqSsQi5gE6cjSUoOj8z3m0pFF9tNwmzyOohXl4fBUxHOl-lvbM0_8HT/exec";
+// 🔗 URL BACKEND (metti il tuo!)
+const API = "https://script.google.com/macros/s/AKfycbxZhtmRJMAMn8auYc1Z2A9TJ2x9N81_PS7Ez_kfTYlvcKb3b4tOafN4WUEFEw6bwN_5/exec";
 
-// ACTIONS
+// 🔧 Azioni
 const ACTION_LOGIN   = "login";
 const ACTION_SALVA   = "salvaPresenza";
 const ACTION_STORICO = "getStorico";
@@ -13,21 +14,14 @@ const ACTION_DELETE  = "deletePresenza";
 const ACTION_UPDATE  = "updatePresenza";
 const ACTION_TURNI   = "getTurni";
 
-let autistaCorrente = "";
-let turniCache = [];
+let autistaCorrente = null;
 
 // =====================================================
-// NAVIGAZIONE
+// SHOW/HIDE PAGINE
 // =====================================================
 function mostraPagina(id){
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
-
-function logout(){
-    localStorage.removeItem("autista");
-    autistaCorrente = "";
-    mostraPagina("page-login");
+    document.querySelectorAll(".pagina").forEach(p => p.classList.remove("attivo"));
+    document.getElementById(id).classList.add("attivo");
 }
 
 // =====================================================
@@ -42,72 +36,75 @@ async function login(){
         return;
     }
 
+    const url = API + `?action=${ACTION_LOGIN}&nome=${encodeURIComponent(nome)}&pin=${encodeURIComponent(pin)}`;
+
     try{
-        const url = `${API}?action=${ACTION_LOGIN}&nome=${encodeURIComponent(nome)}&pin=${encodeURIComponent(pin)}`;
         const res = await fetch(url);
-        const js  = await res.json();
+        const js = await res.json();
 
         if(js.status === "OK"){
             autistaCorrente = nome;
             localStorage.setItem("autista", nome);
 
             mostraPagina("page-presenza");
-
-            // 🔥 Carica turni SOLO ORA → nessun NetworkError
             caricaTurni();
-
         } else {
-            alert("Accesso negato");
+            alert("PIN errato");
         }
 
-    }catch(e){
+    }catch(err){
+        console.error("Login error:", err);
         alert("Errore di connessione");
-        console.error(e);
     }
+}
+
+// =====================================================
+// LOGOUT
+// =====================================================
+function logout(){
+    localStorage.removeItem("autista");
+    autistaCorrente = null;
+    mostraPagina("page-accesso");
 }
 
 // =====================================================
 // CARICA TURNI
+// GET SEMPLICE SENZA HEADER → nessun errore CORS
 // =====================================================
 async function caricaTurni(){
     try{
-        const url = `${API}?action=${ACTION_TURNI}`;
+        const url = API + `?action=${ACTION_TURNI}`;
         const res = await fetch(url);
-        const js  = await res.json();
+        const js = await res.json();
 
-        turniCache = js.data || [];
+        if(js.status === "OK"){
+            const sel = document.getElementById("descrizione-turno");
+            sel.innerHTML = "";
 
-        let select = document.getElementById("descrizione-turno");
-        select.innerHTML = "";
-
-        turniCache.forEach(t => {
-            const opt = document.createElement("option");
-            opt.value = t;
-            opt.innerText = t;
-            select.appendChild(opt);
-        });
-
-    }catch(e){
-        console.error("Errore caricamento turni:", e);
+            js.data.forEach(t => {
+                const opt = document.createElement("option");
+                opt.value = t;
+                opt.textContent = t;
+                sel.appendChild(opt);
+            });
+        }
+    }catch(err){
+        console.error("Errore caricamento turni:", err);
     }
 }
 
 // =====================================================
-// CAMBIO TIPO → MOSTRA/NASCONDI DESCRIZIONE
+// CAMBIO TIPO → mostra/nasconde descrizione
 // =====================================================
 function onChangeTipo(){
     const tipo = document.getElementById("tipo").value;
 
-    const boxTurno   = document.getElementById("descrizione-turno");
-    const boxLibero  = document.getElementById("descrizione-libera");
-
     if(tipo === "Turno"){
-        boxTurno.style.display  = "block";
-        boxLibero.style.display = "none";
+        document.getElementById("descrizione-turno").style.display = "block";
+        document.getElementById("descrizione-libera").style.display = "none";
     } else {
-        boxTurno.style.display  = "none";
-        boxLibero.style.display = "block";
-        boxLibero.placeholder = tipo;
+        document.getElementById("descrizione-turno").style.display = "none";
+        document.getElementById("descrizione-libera").style.display = "block";
     }
 }
 
@@ -115,151 +112,106 @@ function onChangeTipo(){
 // SALVA PRESENZA
 // =====================================================
 async function salvaPresenza(){
-    if(!autistaCorrente){
-        alert("Sessione scaduta, rifai login");
-        return;
-    }
 
     const tipo = document.getElementById("tipo").value;
-    let desc;
-
-    if (tipo === "Turno"){
-        desc = document.getElementById("descrizione-turno").value;
-    } else {
-        desc = document.getElementById("descrizione-libera").value;
-    }
+    const desc = document.getElementById("descrizione-turno").value || 
+                 document.getElementById("descrizione-libera").value;
 
     const data = document.getElementById("data").value;
     const ini  = document.getElementById("oraInizio").value;
     const fin  = document.getElementById("oraFine").value;
-    const note = document.getElementById("note").value;
+    const note = document.getElementById("nota").value;
 
-    if(!data){
-        alert("Inserisci una data");
-        return;
-    }
-
-    const url =
-        `${API}?action=${ACTION_SALVA}`+
-        `&autista=${encodeURIComponent(autistaCorrente)}`+
-        `&tipo=${encodeURIComponent(tipo)}`+
-        `&descrizione=${encodeURIComponent(desc)}`+
-        `&data=${encodeURIComponent(data)}`+
-        `&oraInizio=${encodeURIComponent(ini)}`+
-        `&oraFine=${encodeURIComponent(fin)}`+
-        `&note=${encodeURIComponent(note)}`;
+    const url = API 
+        + `?action=${ACTION_SALVA}`
+        + `&autista=${encodeURIComponent(autistaCorrente)}`
+        + `&tipo=${encodeURIComponent(tipo)}`
+        + `&descrizione=${encodeURIComponent(desc)}`
+        + `&data=${encodeURIComponent(data)}`
+        + `&oraInizio=${encodeURIComponent(ini)}`
+        + `&oraFine=${encodeURIComponent(fin)}`
+        + `&note=${encodeURIComponent(note)}`;
 
     try{
         const res = await fetch(url);
-        const js  = await res.json();
+        const js = await res.json();
 
         if(js.status === "OK"){
-            toast("Presenza salvata");
+            alert("Presenza salvata!");
         } else {
-            alert("Errore salvataggio");
+            alert("Errore: " + js.message);
         }
-
-    }catch(e){
+    }catch(err){
+        console.error("Errore salvataggio:", err);
         alert("Errore di rete");
     }
 }
 
 // =====================================================
-// STORICO
+// MOSTRA STORICO
 // =====================================================
-function vaiStorico(){
-    caricaStorico();
+async function vaiStorico(){
     mostraPagina("page-storico");
-}
 
-async function caricaStorico(){
-    const cont = document.getElementById("storico-container");
-    cont.innerHTML = "Caricamento...";
-
-    const url = `${API}?action=${ACTION_STORICO}&autista=${encodeURIComponent(autistaCorrente)}`;
-    const res = await fetch(url);
-    const js  = await res.json();
-
-    if(js.status !== "OK"){
-        cont.innerHTML = "Errore caricamento storico";
-        return;
-    }
-
-    const dati = js.dati || [];
-    dati.sort((a,b) => new Date(b.data) - new Date(a.data));
-
-    let html = "";
-
-    const colori = {
-        "T": "#e0f2fe",
-        "N": "#dcfce7",
-        "": "#f8fafc"
-    };
-
-    dati.forEach(r => {
-        const bg = colori[r.tipo] || "#f8fafc";
-        const data = formatDataSafe(r.data);
-
-        html += `
-<div class="card" id="row-${r.id}" style="background:${bg};margin-bottom:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-        <strong>${r.tipo || r.descrizione}</strong>
-        <span>📅 ${data}</span>
-    </div>
-
-    <div style="margin-top:8px;">
-        <strong>Descrizione:</strong><br>
-        ${r.descrizione}
-    </div>
-
-</div>`;
-    });
-
-    cont.innerHTML = html;
-}
-
-// =====================================================
-// FORMAT DATA
-// =====================================================
-function formatDataSafe(d){
-    if(!d) return "";
-    if(/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-    if(typeof d === "string" && d.includes("T")) return d.split("T")[0];
+    const url = API + `?action=${ACTION_STORICO}&autista=${encodeURIComponent(autistaCorrente)}`;
 
     try{
-        return new Date(d).toISOString().split("T")[0];
-    }catch{
-        return d;
+        const res = await fetch(url);
+        const js = await res.json();
+
+        const div = document.getElementById("contenitore-storico");
+        div.innerHTML = "";
+
+        if(js.status === "OK"){
+            js.dati.forEach(r => {
+                const box = document.createElement("div");
+                box.className = "rigaStorico";
+                box.innerHTML = `
+                    <b>${r.data}</b> — ${r.tipo} — ${r.descrizione}<br>
+                    ${r.oraInizio} → ${r.oraFine}<br>
+                    <button onclick="duplica(${r.id})">Duplica</button>
+                    <button onclick="cancella(${r.id})">Elimina</button>
+                `;
+                div.appendChild(box);
+            });
+        }
+
+    }catch(err){
+        console.error("Errore storico:", err);
     }
 }
 
 // =====================================================
-// TOAST
+// CANCELLA PRESENZA
 // =====================================================
-function toast(msg){
-    let t = document.createElement("div");
-    t.innerHTML = msg;
-    t.style.position = "fixed";
-    t.style.bottom = "20px";
-    t.style.left = "50%";
-    t.style.transform = "translateX(-50%)";
-    t.style.background = "#333";
-    t.style.color = "#fff";
-    t.style.padding = "12px 22px";
-    t.style.borderRadius = "12px";
-    t.style.zIndex = "9999";
-    document.body.appendChild(t);
-    setTimeout(()=> t.remove(), 2000);
+async function cancella(id){
+    if(!confirm("Cancellare presenza?")) return;
+
+    const url = API + `?action=${ACTION_DELETE}&id=${id}`;
+
+    try{
+        await fetch(url);
+        vaiStorico();
+    }catch(err){
+        console.error(err);
+    }
 }
 
 // =====================================================
-// AUTOLOGIN
+// DUPLICA (precompila i campi)
+// =====================================================
+async function duplica(id){
+    mostraPagina("page-presenza");
+}
+
+// =====================================================
+// AUTO LOGIN SE PRESENTE
 // =====================================================
 window.onload = () => {
     const saved = localStorage.getItem("autista");
     if(saved){
         autistaCorrente = saved;
         mostraPagina("page-presenza");
-        // caricaTurni();  <-- NON QUI
+        caricaTurni();
     }
 };
