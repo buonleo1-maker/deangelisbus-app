@@ -26,7 +26,6 @@ function mostraPagina(id){
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
-
 // =====================================================
 // LOGOUT
 // =====================================================
@@ -49,26 +48,28 @@ async function login(){
         return;
     }
 
-    const url = `${API}?action=${ACTION_LOGIN}&nome=${encodeURIComponent(nome)}&pin=${encodeURIComponent(pin)}`;
+    const url = API + `?action=login&nome=${encodeURIComponent(nome)}&pin=${encodeURIComponent(pin)}`;
 
     try{
-        const r = await fetch(url);
-        const js = await r.json();
+        const res = await fetch(url);
+        const js = await res.json();
 
         if(js.status === "OK"){
             autistaCorrente = nome;
             localStorage.setItem("autista", nome);
+
             mostraPagina("page-presenza");
             caricaTurni();
         } else {
-            alert("Credenziali errate");
+            alert("PIN errato");
         }
 
     }catch(err){
-        console.error(err);
+        console.error("Login error:", err);
         alert("Errore di connessione");
     }
 }
+
 
 // =====================================================
 // LOGOUT
@@ -78,6 +79,7 @@ function logout(){
     autistaCorrente = null;
     mostraPagina("page-login");
 }
+
 
 // =====================================================
 // CARICA TURNI
@@ -219,5 +221,8 @@ window.onload = () => {
         autistaCorrente = saved;
         mostraPagina("page-presenza");
         caricaTurni();
+    } else {
+        mostraPagina("page-login");
     }
 };
+
