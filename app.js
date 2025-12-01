@@ -167,31 +167,60 @@ async function salvaPresenza(){
 async function vaiStorico(){
     mostraPagina("page-storico");
 
-    const url = `${API}?action=${ACTION_STORICO}&autista=${encodeURIComponent(autistaCorrente)}`;
+    const url = API + `?action=${ACTION_STORICO}&autista=${encodeURIComponent(autistaCorrente)}`;
 
     try{
-        const r = await fetch(url);
-        const js = await r.json();
+        const res = await fetch(url);
+        const js = await res.json();
 
         const div = document.getElementById("storico-container");
         div.innerHTML = "";
 
         if(js.status === "OK"){
             js.dati.forEach(r => {
+
+                // FORMATTA DATA IN MODO PULITO
+                let d = r.data;
+                if(d.includes("-")){
+                    const p = d.split("-");
+                    d = `${p[2]}/${p[1]}/${p[0]}`;
+                }
+
                 const box = document.createElement("div");
-                box.style.marginBottom = "12px";
-                box.innerHTML = `
-                    <b>${r.data}</b> — ${r.tipo} — ${r.descrizione}<br>
-                    ${r.oraInizio} → ${r.oraFine}<br>
-                    <button onclick="duplica(${r.id})">Duplica</button>
-                    <button onclick="cancella(${r.id})">Elimina</button>
+                box.className = "rigaStorico";
+                box.style.cssText = `
+                    background:white;
+                    border-radius:14px;
+                    padding:16px;
+                    margin-bottom:14px;
+                    box-shadow:0 4px 12px rgba(0,0,0,.12);
+                    font-size:15px;
+                    line-height:1.4em;
                 `;
+
+                box.innerHTML = `
+                    <b>${d}</b><br>
+                    <span style="color:#1e3a8a">${r.tipo}</span> — ${r.descrizione}<br>
+                    ${r.oraInizio || ""} ${r.oraFine ? "→ " + r.oraFine : ""}
+
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button onclick="duplica(${r.id})"
+                            style="flex:1; padding:10px; border-radius:10px; background:#0284c7; color:white; border:none;">
+                            Duplica
+                        </button>
+                        <button onclick="cancella(${r.id})"
+                            style="flex:1; padding:10px; border-radius:10px; background:#dc2626; color:white; border:none;">
+                            Elimina
+                        </button>
+                    </div>
+                `;
+
                 div.appendChild(box);
             });
         }
 
     }catch(err){
-        console.error(err);
+        console.error("Errore storico:", err);
     }
 }
 
