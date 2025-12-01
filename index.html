@@ -15,7 +15,7 @@
         background: #eaf2ff;
     }
 
-    .contenitore {
+    .container {
         max-width: 500px;
         margin: 30px auto;
         background: #fff;
@@ -23,6 +23,8 @@
         border-radius: 20px;
         box-shadow: 0 6px 20px rgba(0,0,0,0.12);
     }
+
+    .page { display: none; }
 
     h2 {
         margin-top: 0;
@@ -50,9 +52,7 @@
         box-sizing: border-box;
     }
 
-    textarea {
-        height: 70px;
-    }
+    textarea { height: 70px; }
 
     button {
         width: 100%;
@@ -66,13 +66,14 @@
     }
 
     .btn-login { background: #0078D7; }
-    .btn-salva  { background: #0078D7; }
+    .btn-salva { background: #0078D7; }
     .btn-storico { background: #4557d4; }
     .btn-esci { background: #d63c3c; }
 
-    .btn-blue { background: #0078D7; width: 32%; display: inline-block; }
-    .btn-orange { background: #ff8c00; width: 32%; display: inline-block; }
-    .btn-red { background: #d63c3c; width: 32%; display: inline-block; }
+    .btn { padding: 10px; border-radius: 8px; cursor: pointer; color: white; }
+    .blu { background: #0078D7; width: 32%; }
+    .arancione { background: #ff8c00; width: 32%; }
+    .rosso { background: #d63c3c; width: 32%; }
 
     .card {
         background: #fff;
@@ -82,17 +83,10 @@
         box-shadow: 0 4px 14px rgba(0,0,0,0.1);
     }
 
-    .data {
-        font-weight: bold;
-        color: #1b3a7a;
-        margin-bottom: 6px;
-    }
-
-    .azioni {
-        margin-top: 15px;
+    .rigaBottoni {
         display: flex;
+        margin-top: 15px;
         justify-content: space-between;
-        gap: 5px;
     }
 
     #toast {
@@ -106,21 +100,19 @@
         border-radius: 12px;
         display: none;
     }
-
-    .pagina { display: none; }
 </style>
 </head>
 
 <body>
 
-<div class="contenitore">
+<div class="container">
 
     <!-- LOGIN -->
-    <div id="page-login" class="pagina">
-        <h2><span class="material-icons-round">login</span> Accesso</h2>
+    <div id="page-login" class="page active">
+        <h2><span class="material-icons-round">login</span>Accesso</h2>
 
         <label>Autista</label>
-        <input id="login-autista" placeholder="COGNOME Nome">
+        <input id="login-nome" placeholder="COGNOME Nome">
 
         <label>PIN</label>
         <input id="login-pin" type="password" placeholder="PIN">
@@ -130,7 +122,7 @@
 
 
     <!-- INSERIMENTO PRESENZA -->
-    <div id="page-presenza" class="pagina">
+    <div id="page-presenza" class="page">
         <h2><span class="material-icons-round">edit_calendar</span>Inserisci Presenza</h2>
 
         <label>Tipo</label>
@@ -147,8 +139,9 @@
             <option value="Permesso">Permesso</option>
         </select>
 
-        <label>Descrizione / Turno</label>
-        <select id="descrizione"></select>
+        <label>Turno / Descrizione</label>
+        <select id="descrizione-turno"></select>
+        <input id="descrizione-libera" placeholder="Descrizione libera (se non turno)">
 
         <label>Data</label>
         <input type="date" id="data">
@@ -160,25 +153,23 @@
         <input type="time" id="oraFine">
 
         <label>Note</label>
-        <textarea id="note" placeholder="Nota opzionale"></textarea>
+        <textarea id="note"></textarea>
 
         <button class="btn-salva" onclick="salvaPresenza()">Salva</button>
-        <button class="btn-storico" onclick="mostraStorico(); mostraPagina('page-storico')">Storico</button>
+        <button class="btn-storico" onclick="vaiStorico()">Storico</button>
         <button class="btn-esci" onclick="logout()">Esci</button>
     </div>
 
 
-   <!-- ============================
-     STORICO PRESENZE
-============================= -->
-<div id="page-storico" class="page">
-    <h2><i class="material-icons-round">history</i> Storico</h2>
+    <!-- STORICO -->
+    <div id="page-storico" class="page">
+        <h2><i class="material-icons-round">history</i>Storico</h2>
 
-    <div id="storico-container"></div>
+        <div id="contenitore-storico"></div>
 
-    <button class="secondary" onclick="mostraPagina('page-presenza')">➕ Inserisci</button>
-    <button class="secondary" onclick="logout()">Esci</button>
-</div>
+        <button class="btn-storico" onclick="mostraPagina('page-presenza')">Inserisci</button>
+        <button class="btn-esci" onclick="logout()">Esci</button>
+    </div>
 
 </div>
 
@@ -188,4 +179,3 @@
 
 </body>
 </html>
-
