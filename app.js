@@ -162,18 +162,56 @@ async function salvaPresenza() {
  ******************************************************/
 async function mostraStorico() {
     try {
-        const res = await fetch(`${API}?action=getStorico&autista=${encodeURIComponent(autistaCorrente)}`);
+        const url = `${API}?action=getStorico&autista=${encodeURIComponent(autistaCorrente)}`;
+        const res = await fetch(url);
         const js = await res.json();
 
-        if (js.status === "OK") {
-            storicoGlobale = js.dati;
-            renderStorico();
+        if (js.status !== "OK") {
+            alert("Errore caricamento storico");
+            return;
         }
-    } catch (err) {
-        console.error(err);
-        toast("Errore caricamento storico");
+
+        const cont = document.getElementById("storico-container");
+        cont.innerHTML = "";
+
+        js.dati.forEach(r => {
+
+            // 🎯 FORMATTATORE DATA — sempre dd/mm/yyyy
+            let dataVisuale = r.data;
+            if (r.data.includes("-")) {
+                const [y, m, d] = r.data.split("-");
+                dataVisuale = `${d}/${m}/${y}`;
+            }
+
+            // 🎯 FORMATTATORE TIPO: T/N → testo
+            let tipoTxt = "";
+            if (r.tipo === "T") tipoTxt = "Turno";
+            else if (r.tipo === "N") tipoTxt = "Noleggio";
+            else tipoTxt = r.tipo;
+
+            // 🎯 CARD VISIALE
+            cont.innerHTML += `
+            <div class="card">
+                <h3>${dataVisuale}</h3>
+                <p><b>${tipoTxt}</b> — ${r.descrizione}</p>
+                <p>${r.oraInizio || ""} → ${r.oraFine || ""}</p>
+
+                <div class="btn-row">
+                    <button onclick="duplicaPresenza(${r.id})" class="btn-blue">Duplica</button>
+                    <button onclick="modificaPresenza(${r.id})" class="btn-orange">Modifica</button>
+                    <button onclick="eliminaPresenza(${r.id})" class="btn-red">Elimina</button>
+                </div>
+            </div>`;
+        });
+
+        mostraPagina("page-storico");
+
+    } catch (e) {
+        console.error(e);
+        alert("Errore rete storico");
     }
 }
+
 
 function renderStorico() {
     const box = document.getElementById("storico-lista");
