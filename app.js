@@ -4,7 +4,7 @@
 // =====================================================
 
 // 🔗 URL BACKEND
-const API = "https://script.google.com/macros/s/AKfycbxZhtmRJMnA8uYc12ZA9T1JZwX9N81_pT5Ez_kTlFvvcKb34btofN4WUEFlwU5/exec";
+const API = "https://script.google.com/macros/s/AKfycbzM0vZgWDKXrwDthkrnzCKWk3dnTb-u-zR-IvpcZidt-GupAHPwkh6gpPHLmSpd7h-U/exec";
 
 // 🔧 Azioni
 const ACTION_LOGIN   = "login";
