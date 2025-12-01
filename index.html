@@ -168,15 +168,17 @@
     </div>
 
 
-    <!-- STORICO -->
-    <div id="page-storico" class="pagina">
-        <h2><span class="material-icons-round">history</span>Storico</h2>
+   <!-- ============================
+     STORICO PRESENZE
+============================= -->
+<div id="page-storico" class="page">
+    <h2><i class="material-icons-round">history</i> Storico</h2>
 
-        <div id="storico-lista"></div>
+    <div id="storico-container"></div>
 
-        <button class="btn-blue" onclick="nuovaPresenza()">Inserisci</button>
-        <button class="btn-esci" onclick="logout()">Esci</button>
-    </div>
+    <button class="secondary" onclick="mostraPagina('page-presenza')">➕ Inserisci</button>
+    <button class="secondary" onclick="logout()">Esci</button>
+</div>
 
 </div>
 
@@ -186,3 +188,4 @@
 
 </body>
 </html>
+
